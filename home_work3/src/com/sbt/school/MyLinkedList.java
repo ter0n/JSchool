@@ -2,32 +2,19 @@ package com.sbt.school;
 
 import java.util.Iterator;
 
-
 public class MyLinkedList<T> implements Iterable<T>{
-    private Node first;
-    private Node last;
+    private Node<T> first;
+    private Node<T> last;
     private int size;
 
-    private class Node<T>{
-        T item;
-        Node next;
-        Node previous;
-
-        Node(T newItem, Node itemNext, Node itemPrevious){
-            this.item = newItem;
-            this.next = itemNext;
-            this.previous = itemPrevious;
-        }
-    }
-
     MyLinkedList(){
-        first = new Node(null, null, null);
+        first = new Node<T>(null, null, null);
         last = first;
         size = 0;
     }
 
     MyLinkedList(T newItem){
-        first = new Node(newItem, null, null);
+        first = new Node<T>(newItem, null, null);
         last = first;
         size = 1;
     }
@@ -40,11 +27,11 @@ public class MyLinkedList<T> implements Iterable<T>{
             first.item = element;
             last = first;
         } else if(size == 1) {
-            Node node = new Node(element, null, first);
+            Node<T> node = new Node<T>(element, null, first);
             last = node;
             first.next = node;
         } else {
-            Node node = new Node(element, null, last);
+            Node<T> node = new Node<T>(element, null, last);
             last.next = node;
             last = node;
         }
@@ -65,28 +52,28 @@ public class MyLinkedList<T> implements Iterable<T>{
                 last = first;
             } else if(size == 1) {
                 if(index == 0){
-                    Node node = new Node(first.item, null, first);
+                    Node<T> node = new Node(first.item, null, first);
                     last = node;
                     first.item = element;
                     first.next = node;
                 } else {
-                    Node node = new Node(element, null, first);
+                    Node<T> node = new Node(element, null, first);
                     last = node;
                     first.next = node;
                 }
             } else {
                 if(index == size){
-                    Node node = new Node(element, null, last);
+                    Node<T> node = new Node(element, null, last);
                     last.next = node;
                     last = node;
                 }else {
                     //ищем элемент, стоящий на заданном индексе
-                    Node curElem = getNode(index);
+                    Node<T> curElem = getNode(index);
                     //создаем новый узел
-                    Node node = new Node(element, curElem, curElem.previous);
+                    Node<T> node = new Node(element, curElem, curElem.previous);
                     //вставляем узел в список
                     if (index > 0) {
-                        Node prev = curElem.previous;
+                        Node<T> prev = curElem.previous;
                         prev.next = node;
                     } else {
                         first = node;
@@ -108,7 +95,7 @@ public class MyLinkedList<T> implements Iterable<T>{
             //надо бы вставить экзепшен какой-то
         } else {
             //ищем элемент, стоящий на заданном индексе
-            Node node = getNode(index);
+            Node<T> node = getNode(index);
             //возвращаем значение из найденного узла
             return (T)node.item;
         }
@@ -124,7 +111,7 @@ public class MyLinkedList<T> implements Iterable<T>{
             //надо бы вставить экзепшен какой-то
         } else {
             int curIndex = 0;
-            Node curElem = first;
+            Node<T> curElem = first;
             while(curIndex < index){
                 curIndex++;
                 curElem = curElem.next;
@@ -143,10 +130,10 @@ public class MyLinkedList<T> implements Iterable<T>{
             //надо бы вставить экзепшен какой-то
         } else {
             //ищем элемент, стоящий на заданном индексе
-            Node node = getNode(index);
+            Node<T> node = getNode(index);
             //удвляем найденный узел узел
-            Node next = node.next;
-            Node prev = node.previous;
+            Node<T> next = node.next;
+            Node<T> prev = node.previous;
             if(index < (size - 1))
                 next.previous = prev;
             if(index > 0)
@@ -195,10 +182,28 @@ public class MyLinkedList<T> implements Iterable<T>{
         return size;
     }
 
-//    boolean addAll(MyLinkedList<?> adderList){
-//        boolean addComplete;
-//
-//    }
+    boolean addAll(MyLinkedList<? extends T> adderList){
+        boolean addComplete;
+        Node<T> node;
+        Iterator addListIter = adderList.iterator();
+        while(addListIter.hasNext()){
+             this.add((T)addListIter.next());
+        }
+        addComplete = true;
+        return addComplete;
+    }
+
+    boolean copy (MyLinkedList<? extends T> copList){
+        //если удалить ссылки с первого и последнего элемента, удалятся ли промежуточные элементы?
+        size = 0;
+        first.next = null;
+        last.previous = null;
+        Iterator addListIter = copList.iterator();
+        while(addListIter.hasNext()){
+            this.add((T)addListIter.next());
+        }
+        return true;
+    }
 
 
 }
