@@ -1,6 +1,7 @@
 package com.sbt.school;
 
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -54,7 +55,110 @@ public class Main {
 
     }
 
+    /*
+        получить все возможные типы-параметры в объекте класса Runtime
+     */
+    public static void task2(){
+        Runtime runtime = new Runtime();
+        Class runtimeClass = runtime.getClass();
+        try {
+
+            System.out.println("Задание 2: получить все возможные типы-параметры в объекте класса Runtime\n");
+
+
+
+            //Поле integers
+            System.out.println("Поле integers");
+            Field intgrs = runtimeClass.getDeclaredField("integers");
+            Type genericFieldType = intgrs.getGenericType();
+
+            if(genericFieldType instanceof ParameterizedType){
+                ParameterizedType aType = (ParameterizedType) genericFieldType;
+                Type[] fieldArgTypes = aType.getActualTypeArguments();
+                for(Type fieldArgType : fieldArgTypes){
+                    Class fieldArgClass = (Class) fieldArgType;
+                    System.out.println("integers field type = " + fieldArgClass);
+                }
+                System.out.println();
+            }
+
+            //метод numbers
+            System.out.println("Метод numbers");
+            Method numbersMethod = runtimeClass.getMethod("numbers", null);
+
+            Type numbersReturnType = numbersMethod.getGenericReturnType();
+
+            if(numbersReturnType instanceof ParameterizedType){
+                ParameterizedType type = (ParameterizedType) numbersReturnType;
+                System.out.println("numbers return type = " + type.getTypeName());
+                Type[] typeArguments = type.getActualTypeArguments();
+                for(Type typeArgument : typeArguments){
+                    System.out.println("numbers return type parameter = " + typeArgument);
+                }
+                System.out.println();
+            }
+
+
+
+
+
+            //метод strings
+            System.out.println("Метод strings");
+            Method stringsMethod = runtimeClass.getMethod("strings", null);
+
+            Type stringsReturnType = stringsMethod.getGenericReturnType();
+
+            if(stringsReturnType instanceof ParameterizedType){
+                ParameterizedType type = (ParameterizedType) stringsReturnType;
+                System.out.println("strings return type = " + type.getTypeName());
+                Type[] typeArguments = type.getActualTypeArguments();
+                for(Type typeArgument : typeArguments){
+                    System.out.println("strings return type parameter = " + typeArgument);
+                }
+                System.out.println();
+            }
+
+            //метод call
+            System.out.println("Метод call");
+            Type[] genericInterfaces =runtimeClass.getGenericInterfaces();
+            for (Type genericInterface : genericInterfaces) {
+                if (genericInterface instanceof ParameterizedType) {
+                    Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+                    for (Type genericType : genericTypes) {
+                        System.out.println("Call return type: " + genericType);
+                    }
+                }
+            }
+
+        } catch (NoSuchFieldException e) {
+            System.out.println("Field integers is not found!");
+        } catch (NoSuchMethodException e) {
+            System.out.println("Some method is not found!");
+        }
+    }
+
     public static void main(String[] args) {
-	    task1();
+//	    task1();
+//	    task2();
+        ArrayList<Integer> integerArrayList = new ArrayList<>();
+        integerArrayList.add(5);
+        integerArrayList.add(478);
+        integerArrayList.add(654);
+        integerArrayList.add(1);
+        integerArrayList.add(0);
+        TestA testA = new TestA(145, "something", 329.215, integerArrayList);
+        testA.printFields();
+        TestB testB = new TestB();
+        testB.printField();
+
+        try {
+            BeanUtils.assign(testB,testA);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        testB.printField();
     }
 }
